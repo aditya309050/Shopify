@@ -90,15 +90,21 @@ export function CartMain({layout, cart: originalCart}) {
 function CartEmpty({hidden = false}) {
   const {close} = useAside();
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
+    <div hidden={hidden} className="flex flex-col items-center justify-center text-center py-12 px-4">
+      <div className="w-20 h-20 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-3xl text-amber-600 mb-4 shadow-sm">
+        💎
+      </div>
+      <h4 className="text-xl font-bold text-slate-900 font-serif mb-2">Your Cart is Empty</h4>
+      <p className="text-slate-500 text-sm max-w-xs mb-6">
+        Looks like you haven&rsquo;t added any 22K gold or diamond jewellery yet!
       </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
+      <Link
+        to="/collections/all"
+        onClick={close}
+        prefetch="viewport"
+        className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-bold px-6 py-3 rounded-full text-sm uppercase tracking-wider shadow-md transition-transform transform hover:-translate-y-0.5"
+      >
+        Explore Collections &rarr;
       </Link>
     </div>
   );

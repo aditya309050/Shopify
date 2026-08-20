@@ -1,5 +1,5 @@
 import {Link, useNavigate} from 'react-router';
-import {AddToCartButton} from './AddToCartButton';
+import {CartForm} from '@shopify/hydrogen';
 import {useAside} from './Aside';
 
 /**
@@ -11,16 +11,28 @@ import {useAside} from './Aside';
 export function ProductForm({productOptions, selectedVariant}) {
   const navigate = useNavigate();
   const {open} = useAside();
+
+  const isAvailable = selectedVariant?.availableForSale;
+  const lineItems = selectedVariant
+    ? [
+        {
+          merchandiseId: selectedVariant.id,
+          quantity: 1,
+          selectedVariant,
+        },
+      ]
+    : [];
+
   return (
-    <div className="product-form">
+    <div className="product-form flex flex-col gap-4">
+      {/* Variant Selector Pills */}
       {productOptions.map((option) => {
-        // If there is only a single value in the option values, don't display the option
         if (option.optionValues.length === 1) return null;
 
         return (
-          <div className="product-options" key={option.name}>
-            <h5>{option.name}</h5>
-            <div className="product-options-grid">
+          <div className="fk-variant-section" key={option.name}>
+            <span className="fk-variant-label">{option.name}</span>
+            <div className="fk-variant-pills">
               {option.optionValues.map((value) => {
                 const {
                   name,
@@ -34,45 +46,26 @@ export function ProductForm({productOptions, selectedVariant}) {
                 } = value;
 
                 if (isDifferentProduct) {
-                  // SEO
-                  // When the variant is a combined listing child product
-                  // that leads to a different url, we need to render it
-                  // as an anchor tag
                   return (
                     <Link
-                      className="product-options-item"
+                      className={`fk-variant-btn ${selected ? 'active' : ''}`}
                       key={option.name + name}
                       prefetch="intent"
                       preventScrollReset
                       replace
                       to={`/products/${handle}?${variantUriQuery}`}
-                      style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
-                        opacity: available ? 1 : 0.3,
-                      }}
+                      style={{opacity: available ? 1 : 0.4}}
                     >
                       <ProductOptionSwatch swatch={swatch} name={name} />
                     </Link>
                   );
                 } else {
-                  // SEO
-                  // When the variant is an update to the search param,
-                  // render it as a button with javascript navigating to
-                  // the variant so that SEO bots do not index these as
-                  // duplicated links
                   return (
                     <button
                       type="button"
-                      className={`product-options-item${exists && !selected ? ' link' : ''}`}
+                      className={`fk-variant-btn ${selected ? 'active' : ''}`}
                       key={option.name + name}
-                      style={{
-                        border: selected
-                          ? '1px solid black'
-                          : '1px solid transparent',
-                        opacity: available ? 1 : 0.3,
-                      }}
+                      style={{opacity: available ? 1 : 0.4}}
                       disabled={!exists}
                       onClick={() => {
                         if (!selected) {
@@ -89,39 +82,60 @@ export function ProductForm({productOptions, selectedVariant}) {
                 }
               })}
             </div>
-            <br />
           </div>
         );
       })}
-      <AddToCartButton
-        disabled={!selectedVariant || !selectedVariant.availableForSale}
-        onClick={() => {
-          open('cart');
-        }}
-        lines={
-          selectedVariant
-            ? [
-                {
-                  merchandiseId: selectedVariant.id,
-                  quantity: 1,
-                  selectedVariant,
-                },
-              ]
-            : []
-        }
-      >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
-      </AddToCartButton>
+
+      {/* Flipkart Dual Action Buttons: ADD TO CART & BUY NOW */}
+      <div className="fk-action-buttons mt-4">
+        {/* ADD TO CART BUTTON (Yellow #ff9f00) */}
+        <CartForm
+          route="/cart"
+          inputs={{lines: lineItems}}
+          action={CartForm.ACTIONS.LinesAdd}
+        >
+          {(fetcher) => (
+            <button
+              type="submit"
+              className="btn-fk-add-cart"
+              disabled={!isAvailable || fetcher.state !== 'idle'}
+              onClick={() => open('cart')}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+              </svg>
+              <span>{isAvailable ? 'ADD TO CART' : 'OUT OF STOCK'}</span>
+            </button>
+          )}
+        </CartForm>
+
+        {/* BUY NOW BUTTON (Orange #fb641b) */}
+        <CartForm
+          route="/cart"
+          inputs={{lines: lineItems}}
+          action={CartForm.ACTIONS.LinesAdd}
+        >
+          {(fetcher) => (
+            <button
+              type="submit"
+              className="btn-fk-buy-now"
+              disabled={!isAvailable || fetcher.state !== 'idle'}
+              onClick={() => {
+                open('cart');
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+              </svg>
+              <span>{isAvailable ? 'BUY NOW' : 'OUT OF STOCK'}</span>
+            </button>
+          )}
+        </CartForm>
+      </div>
     </div>
   );
 }
 
-/**
- * @param {{
- *   swatch?: Maybe<ProductOptionValueSwatch> | undefined;
- *   name: string;
- * }}
- */
 function ProductOptionSwatch({swatch, name}) {
   const image = swatch?.image?.previewImage?.url;
   const color = swatch?.color;
@@ -132,16 +146,9 @@ function ProductOptionSwatch({swatch, name}) {
     <div
       aria-label={name}
       className="product-option-label-swatch"
-      style={{
-        backgroundColor: color || 'transparent',
-      }}
+      style={{backgroundColor: color || 'transparent'}}
     >
       {!!image && <img src={image} alt={name} />}
     </div>
   );
 }
-
-/** @typedef {import('@shopify/hydrogen').MappedProductOptions} MappedProductOptions */
-/** @typedef {import('@shopify/hydrogen/storefront-api-types').Maybe} Maybe */
-/** @typedef {import('@shopify/hydrogen/storefront-api-types').ProductOptionValueSwatch} ProductOptionValueSwatch */
-/** @typedef {import('storefrontapi.generated').ProductFragment} ProductFragment */

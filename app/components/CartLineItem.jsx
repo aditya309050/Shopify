@@ -5,10 +5,6 @@ import {ProductPrice} from './ProductPrice';
 import {useAside} from './Aside';
 
 /**
- * A single line item in the cart. It displays the product image, title, price.
- * It also provides controls to update the quantity or remove the line item.
- * If the line is a parent line that has child components (like warranties or gift wrapping), they are
- * rendered nested below the parent line.
  * @param {{
  *   layout: CartLayout;
  *   line: CartLine;
@@ -24,19 +20,20 @@ export function CartLineItem({layout, line, childrenMap}) {
   const childrenLabelId = `cart-line-children-${id}`;
 
   return (
-    <li key={id} className="cart-line">
-      <div className="cart-line-inner">
-        {image && (
-          <Image
-            alt={title}
-            aspectRatio="1/1"
-            data={image}
-            height={100}
-            loading="lazy"
-            width={100}
-          />
-        )}
+    <li key={id} className="cart-line-card">
+      {image && (
+        <Image
+          alt={title}
+          aspectRatio="1/1"
+          data={image}
+          height={80}
+          loading="lazy"
+          width={80}
+          className="cart-line-img"
+        />
+      )}
 
+      <div className="cart-line-details">
         <div>
           <Link
             prefetch="intent"
@@ -46,27 +43,26 @@ export function CartLineItem({layout, line, childrenMap}) {
                 close();
               }
             }}
+            className="cart-line-title hover:underline"
           >
-            <p>
-              <strong>{product.title}</strong>
-            </p>
+            {product.title}
           </Link>
-          <ProductPrice price={line?.cost?.totalAmount} />
-          <ul>
-            {selectedOptions.map((option) => (
-              <li key={option.name}>
-                <small>
-                  {option.name}: {option.value}
-                </small>
-              </li>
-            ))}
-          </ul>
-          <CartLineQuantity line={line} />
+          <div className="text-xs text-slate-500 mt-0.5">
+            {selectedOptions
+              ?.filter((opt) => opt.value !== 'Default Title')
+              .map((opt) => `${opt.name}: ${opt.value}`)
+              .join(' | ')}
+          </div>
+          <div className="cart-line-price mt-1">
+            <ProductPrice price={line?.cost?.totalAmount} />
+          </div>
         </div>
+
+        <CartLineQuantity line={line} />
       </div>
 
       {lineItemChildren ? (
-        <div>
+        <div className="w-full">
           <p id={childrenLabelId} className="sr-only">
             Line items with {product.title}
           </p>
@@ -87,9 +83,6 @@ export function CartLineItem({layout, line, childrenMap}) {
 }
 
 /**
- * Provides the controls to update the quantity of a line item in the cart.
- * These controls are disabled when the line item is new, and the server
- * hasn't yet responded that it was successfully added to the cart.
  * @param {{line: CartLine}}
  */
 function CartLineQuantity({line}) {
@@ -99,39 +92,39 @@ function CartLineQuantity({line}) {
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
   return (
-    <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
-      <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
-        <button
-          aria-label="Decrease quantity"
-          disabled={quantity <= 1 || !!isOptimistic}
-          name="decrease-quantity"
-          value={prevQuantity}
-        >
-          <span>&#8722; </span>
-        </button>
-      </CartLineUpdateButton>
-      &nbsp;
-      <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
-        <button
-          aria-label="Increase quantity"
-          name="increase-quantity"
-          value={nextQuantity}
-          disabled={!!isOptimistic}
-        >
-          <span>&#43;</span>
-        </button>
-      </CartLineUpdateButton>
-      &nbsp;
+    <div className="flex items-center justify-between mt-2">
+      <div className="quantity-selector">
+        <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
+          <button
+            className="quantity-btn"
+            aria-label="Decrease quantity"
+            disabled={quantity <= 1 || !!isOptimistic}
+            name="decrease-quantity"
+            value={prevQuantity}
+          >
+            <span>&#8722;</span>
+          </button>
+        </CartLineUpdateButton>
+        <span className="quantity-num">{quantity}</span>
+        <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
+          <button
+            className="quantity-btn"
+            aria-label="Increase quantity"
+            name="increase-quantity"
+            value={nextQuantity}
+            disabled={!!isOptimistic}
+          >
+            <span>&#43;</span>
+          </button>
+        </CartLineUpdateButton>
+      </div>
+
       <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
     </div>
   );
 }
 
 /**
- * A button that removes a line item from the cart. It is disabled
- * when the line item is new, and the server hasn't yet responded
- * that it was successfully added to the cart.
  * @param {{
  *   lineIds: string[];
  *   disabled: boolean;
@@ -145,7 +138,11 @@ function CartLineRemoveButton({lineIds, disabled}) {
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
+      <button
+        disabled={disabled}
+        type="submit"
+        className="text-xs text-rose-500 hover:text-rose-700 font-semibold cursor-pointer border-none bg-transparent"
+      >
         Remove
       </button>
     </CartForm>
@@ -173,22 +170,6 @@ function CartLineUpdateButton({children, lines}) {
   );
 }
 
-/**
- * Returns a unique key for the update action. This is used to make sure actions modifying the same line
- * items are not run concurrently, but cancel each other. For example, if the user clicks "Increase quantity"
- * and "Decrease quantity" in rapid succession, the actions will cancel each other and only the last one will run.
- * @returns
- * @param {string[]} lineIds - line ids affected by the update
- */
 function getUpdateKey(lineIds) {
   return [CartForm.ACTIONS.LinesUpdate, ...lineIds].join('-');
 }
-
-/** @typedef {OptimisticCartLine<CartApiQueryFragment>} CartLine */
-
-/** @typedef {import('@shopify/hydrogen/storefront-api-types').CartLineUpdateInput} CartLineUpdateInput */
-/** @typedef {import('~/components/CartMain').CartLayout} CartLayout */
-/** @typedef {import('~/components/CartMain').LineItemChildrenMap} LineItemChildrenMap */
-/** @typedef {import('@shopify/hydrogen').OptimisticCartLine} OptimisticCartLine */
-/** @typedef {import('storefrontapi.generated').CartApiQueryFragment} CartApiQueryFragment */
-/** @typedef {import('storefrontapi.generated').CartLineFragment} CartLineFragment */

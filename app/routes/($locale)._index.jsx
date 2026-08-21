@@ -124,16 +124,16 @@ export default function Homepage() {
   /** @type {LoaderReturnData} */
   const data = useLoaderData();
   return (
-    <div className="home max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
+    <div className="home w-full pb-16 space-y-16">
       {data.isShopLinked ? null : <MockShopNotice />}
       
-      {/* Luxury Jewellery 4-Slide Interactive Hero Carousel */}
+      {/* 100% Full-Screen Edge-to-Edge Photographic Hero Carousel */}
       <JewelleryHeroSlider collection={data.featuredCollection} />
 
-      {/* Jewellery Categories Grid */}
+      {/* 100% Full-Bleed Edge-to-Edge Category Grid (Matching Hero Image Width) */}
       <JewelleryCategoryGrid />
 
-      {/* Recommended Jewellery Products Grid */}
+      {/* 100% Full-Bleed Edge-to-Edge Recommended Products (Matching Hero Image Width) */}
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
@@ -142,16 +142,6 @@ export default function Homepage() {
 function JewelleryHeroSlider() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-
-  const subCategories = [
-    {name: 'Ring', url: '/collections/all?cat=rings'},
-    {name: 'Necklace', url: '/collections/all?cat=necklaces'},
-    {name: 'Earrings', url: '/collections/all?cat=earrings'},
-    {name: 'Bracelet', url: '/collections/all?cat=bracelets'},
-    {name: 'Anklet', url: '/collections/all?cat=anklets'},
-    {name: 'Brooch', url: '/collections/all?cat=brooch'},
-    {name: 'Crown', url: '/collections/all?cat=bridal'},
-  ];
 
   const slides = [
     {
@@ -211,7 +201,7 @@ function JewelleryHeroSlider() {
 
   return (
     <section
-      className="relative mb-12 rounded-3xl overflow-hidden shadow-2xl h-[560px] sm:h-[640px] lg:h-[680px] text-white group cursor-default"
+      className="relative w-full h-[calc(100vh-80px)] min-h-[620px] max-h-[850px] overflow-hidden shadow-2xl text-white group cursor-default"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -228,30 +218,17 @@ function JewelleryHeroSlider() {
       ))}
 
       {/* Dark Atmospheric Gradient Overlay for Text Legibility */}
-      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20 z-10 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20 z-10 pointer-events-none"></div>
 
-      {/* 2. FLOATING SUB-CATEGORY PILLS BAR (Top Center - Exact match to Image 2) */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 hidden md:flex items-center gap-6 bg-slate-950/40 border border-white/20 backdrop-blur-md px-6 py-2 rounded-full shadow-lg text-xs font-medium tracking-wide">
-        {subCategories.map((sub) => (
-          <Link
-            key={sub.name}
-            to={sub.url}
-            className="text-white/80 hover:text-amber-300 transition-colors no-underline"
-          >
-            {sub.name}
-          </Link>
-        ))}
-      </div>
-
-      {/* 3. BOTTOM-LEFT OVERLAY CONTENT (Exact match to Image 2) */}
-      <div className="absolute bottom-10 left-8 sm:left-14 z-20 max-w-xl space-y-4">
+      {/* 2. BOTTOM-LEFT OVERLAY CONTENT */}
+      <div className="absolute bottom-12 left-6 sm:left-12 lg:left-16 z-20 max-w-xl space-y-4">
         {/* Glassmorphic Badge */}
         <span className="bg-white/10 border border-white/20 text-white/90 text-[10px] font-bold tracking-[0.2em] uppercase px-3.5 py-1.5 rounded-full inline-block backdrop-blur-md">
           {current.badge}
         </span>
 
         {/* Title Lines */}
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-sans font-bold leading-tight text-white tracking-tight">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-sans font-bold leading-tight text-white tracking-tight">
           <span className="block">{current.titleLine1}</span>
           <span className="italic font-serif font-normal text-white/90 block mt-1">
             {current.titleLine2}
@@ -259,7 +236,7 @@ function JewelleryHeroSlider() {
         </h1>
 
         {/* Description */}
-        <p className="text-slate-200 text-xs sm:text-sm leading-relaxed font-sans max-w-md">
+        <p className="text-slate-200 text-sm sm:text-base leading-relaxed font-sans max-w-md">
           {current.description}
         </p>
 
@@ -267,7 +244,7 @@ function JewelleryHeroSlider() {
         <div className="flex items-center gap-5 pt-3">
           <Link
             to={current.primaryBtnUrl}
-            className="bg-slate-950/80 hover:bg-slate-900 text-white font-bold px-7 py-3 rounded-full text-xs border border-white/30 shadow-lg backdrop-blur-md transition-all no-underline"
+            className="bg-slate-950/80 hover:bg-slate-900 text-white font-bold px-8 py-3.5 rounded-full text-xs border border-white/30 shadow-lg backdrop-blur-md transition-all no-underline"
           >
             {current.primaryBtnText}
           </Link>
@@ -280,21 +257,21 @@ function JewelleryHeroSlider() {
         </div>
       </div>
 
-      {/* 4. RIGHT STACKED THUMBNAIL SELECTOR CARDS (Exact match to Image 2) */}
-      <div className="absolute bottom-10 right-8 z-20 hidden lg:flex flex-col gap-3">
+      {/* 3. RIGHT STACKED THUMBNAIL SELECTOR CARDS */}
+      <div className="absolute bottom-12 right-6 sm:right-12 lg:right-16 z-20 hidden lg:flex flex-col gap-3">
         {slides.map((s, idx) => (
           <button
             key={s.id}
             type="button"
             onClick={() => setActiveSlide(idx)}
-            className={`w-40 h-20 rounded-xl overflow-hidden border transition-all duration-300 relative text-left cursor-pointer group ${
+            className={`w-44 h-22 rounded-xl overflow-hidden border transition-all duration-300 relative text-left cursor-pointer group ${
               activeSlide === idx
-                ? 'border-white shadow-2xl scale-105'
+                ? 'border-white shadow-2xl scale-105 ring-2 ring-amber-400/50'
                 : 'border-white/30 opacity-70 hover:opacity-100 hover:border-white/70'
             }`}
           >
             <img src={s.bgImage} alt={s.badge} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-            <div className="absolute inset-0 bg-slate-950/50 p-2 flex flex-col justify-end">
+            <div className="absolute inset-0 bg-slate-950/50 p-2.5 flex flex-col justify-end">
               <span className="text-[9px] font-bold text-amber-300 uppercase tracking-wider block">{s.badge}</span>
               <span className="text-[10px] font-semibold text-white line-clamp-1">{s.titleLine1}</span>
             </div>
@@ -350,54 +327,55 @@ function JewelleryCategoryGrid() {
   ];
 
   return (
-    <section className="bg-[#FAF8F5] border border-amber-900/10 rounded-3xl p-6 sm:p-10 shadow-sm">
-      
-      {/* SECTION HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 border-b border-amber-900/10 pb-5 gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-bold tracking-[0.25em] text-amber-700 uppercase mb-1">
-            <span>—</span>
-            <span>EXPLORE OUR COLLECTIONS</span>
-            <span>—</span>
+    <section className="w-full bg-[#FAF8F5] border-y border-amber-900/10 py-10 sm:py-14 px-6 sm:px-12 lg:px-16 shadow-xs">
+      <div className="max-w-[1800px] mx-auto">
+        {/* SECTION HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 border-b border-amber-900/10 pb-5 gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-bold tracking-[0.25em] text-amber-700 uppercase mb-1">
+              <span>—</span>
+              <span>EXPLORE OUR COLLECTIONS</span>
+              <span>—</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-amber-950">
+              Shop by Category
+            </h2>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-amber-950">
-            Shop by Category
-          </h2>
-        </div>
-        
-        <Link to="/collections/all" className="text-amber-800 hover:text-amber-950 text-xs font-bold tracking-widest uppercase no-underline flex items-center gap-1">
-          VIEW ALL CATEGORIES &rarr;
-        </Link>
-      </div>
-
-      {/* 6 CATEGORY CARDS GRID */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-        {categories.map((cat) => (
-          <Link
-            key={cat.title}
-            to={cat.url}
-            className="bg-white border border-amber-900/10 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-400 transition-all group flex flex-col no-underline p-3.5"
-          >
-            {/* Image Container */}
-            <div className="w-full aspect-square rounded-xl overflow-hidden bg-[#FAF8F5] flex items-center justify-center p-3 mb-3 border border-amber-900/5">
-              <img
-                src={cat.image}
-                alt={cat.title}
-                className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500"
-              />
-            </div>
-            
-            {/* Category Title & Link */}
-            <div className="text-left px-1">
-              <h4 className="font-serif font-bold text-amber-950 text-sm tracking-wider uppercase mb-1">
-                {cat.title}
-              </h4>
-              <span className="text-[11px] font-semibold text-amber-700 group-hover:text-amber-950 transition-colors block">
-                {cat.linkText}
-              </span>
-            </div>
+          
+          <Link to="/collections/all" className="text-amber-800 hover:text-amber-950 text-xs font-bold tracking-widest uppercase no-underline flex items-center gap-1">
+            VIEW ALL CATEGORIES &rarr;
           </Link>
-        ))}
+        </div>
+
+        {/* 6 CATEGORY CARDS GRID */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+          {categories.map((cat) => (
+            <Link
+              key={cat.title}
+              to={cat.url}
+              className="bg-white border border-amber-900/10 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-400 transition-all group flex flex-col no-underline p-3.5"
+            >
+              {/* Image Container */}
+              <div className="w-full aspect-square rounded-xl overflow-hidden bg-[#FAF8F5] flex items-center justify-center p-3 mb-3 border border-amber-900/5">
+                <img
+                  src={cat.image}
+                  alt={cat.title}
+                  className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              
+              {/* Category Title & Link */}
+              <div className="text-left px-1">
+                <h4 className="font-serif font-bold text-amber-950 text-sm tracking-wider uppercase mb-1">
+                  {cat.title}
+                </h4>
+                <span className="text-[11px] font-semibold text-amber-700 group-hover:text-amber-950 transition-colors block">
+                  {cat.linkText}
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -405,30 +383,32 @@ function JewelleryCategoryGrid() {
 
 function RecommendedProducts({products}) {
   return (
-    <section className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 mb-10 shadow-sm" aria-labelledby="recommended-products">
-      <div className="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
-        <div>
-          <h2 id="recommended-products" className="text-2xl font-bold text-slate-900 font-serif">
-            Deals of the Day | Ujwal Jewellers Specials
-          </h2>
-          <p className="text-slate-500 text-sm mt-0.5">Top-rated 22K gold, solitaire diamond & Kundan ornaments</p>
+    <section className="w-full bg-white border-y border-amber-900/10 py-10 sm:py-14 px-6 sm:px-12 lg:px-16 shadow-xs" aria-labelledby="recommended-products">
+      <div className="max-w-[1800px] mx-auto">
+        <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-5">
+          <div>
+            <h2 id="recommended-products" className="text-2xl sm:text-3xl font-bold text-slate-900 font-serif">
+              Deals of the Day | Ujwal Jewellers Specials
+            </h2>
+            <p className="text-slate-500 text-sm mt-1">Top-rated 22K gold, solitaire diamond & Kundan ornaments</p>
+          </div>
+          <Link to="/collections/all" className="bg-slate-950 hover:bg-amber-600 text-white text-xs font-bold px-6 py-3 rounded-full uppercase tracking-wider transition-colors shadow-sm no-underline">
+            VIEW ALL DEALS
+          </Link>
         </div>
-        <Link to="/collections/all" className="bg-slate-950 hover:bg-amber-600 text-white text-xs font-bold px-6 py-3 rounded-full uppercase tracking-wider transition-colors shadow-sm">
-          VIEW ALL DEALS
-        </Link>
-      </div>
 
-      <Suspense fallback={<div className="text-center py-12 text-slate-500">Loading jewellery items...</div>}>
-        <Await resolve={products}>
-          {() => (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {JEWELLERY_PRODUCTS.map((product) => (
-                <ProductItem key={product.id} product={product} />
-              ))}
-            </div>
-          )}
-        </Await>
-      </Suspense>
+        <Suspense fallback={<div className="text-center py-12 text-slate-500">Loading jewellery items...</div>}>
+          <Await resolve={products}>
+            {() => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                {JEWELLERY_PRODUCTS.map((product) => (
+                  <ProductItem key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+          </Await>
+        </Suspense>
+      </div>
     </section>
   );
 }

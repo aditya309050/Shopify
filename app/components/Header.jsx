@@ -13,9 +13,9 @@ export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
 
   return (
     <>
-      {/* MAIN HEADER (Warm Off-White / Champagne Background #FAF8F5) */}
+      {/* MAIN HEADER (Warm Off-White / Champagne Background #FAF8F5 - Full-bleed width) */}
       <header className="bg-[#FAF8F5] border-b border-amber-900/10 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between gap-6">
+        <div className="w-full px-6 sm:px-12 lg:px-16 py-3 flex items-center justify-between relative">
           
           {/* LEFT: Navigation Links */}
           <div className="flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-slate-800">
@@ -216,8 +216,8 @@ export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
             </div>
           </div>
 
-          {/* CENTER: Ujwal Jewellers Emblem Logo (Exact match to Mockup Screenshot) */}
-          <NavLink to="/" prefetch="intent" className="flex flex-col items-center text-center no-underline py-1 group">
+          {/* ABSOLUTE CENTER: Ujwal Jewellers Emblem Logo (Restored comfortable height) */}
+          <NavLink to="/" prefetch="intent" className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex flex-col items-center text-center no-underline py-1 group z-10">
             {/* Gold Circular Ring Emblem with U Monogram */}
             <div className="w-10 h-10 rounded-full border-2 border-amber-600/80 bg-amber-50 flex items-center justify-center mb-1 shadow-xs group-hover:border-amber-600 group-hover:scale-105 transition-transform">
               <span className="font-serif font-extrabold text-amber-800 text-lg leading-none">U</span>

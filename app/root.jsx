@@ -15,6 +15,7 @@ import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
+import {mergeCartWithSession} from './routes/($locale).cart';
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -131,7 +132,7 @@ async function loadCriticalData({context}) {
  * @param {Route.LoaderArgs}
  */
 function loadDeferredData({context}) {
-  const {storefront, customerAccount, cart} = context;
+  const {storefront, customerAccount, cart, session} = context;
 
   // defer the footer query (below the fold)
   const footer = storefront
@@ -146,8 +147,17 @@ function loadDeferredData({context}) {
       console.error(error);
       return null;
     });
+
+  const cartPromise = cart
+    .get()
+    .catch(() => null)
+    .then((apiCart) => {
+      const customLines = session ? (session.get('custom_cart_lines') || []) : [];
+      return mergeCartWithSession(apiCart, customLines);
+    });
+
   return {
-    cart: cart.get(),
+    cart: cartPromise,
     isLoggedIn: customerAccount.isLoggedIn(),
     footer,
   };

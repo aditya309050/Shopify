@@ -718,6 +718,25 @@ a {
 * Product Cards & Grid
 * --------------------------------------------------
 */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 40em) {
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64em) {
+  .products-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .j-card {
   background: #ffffff;
   border: 1px solid var(--j-border);
@@ -728,6 +747,7 @@ a {
   justify-content: space-between;
   position: relative;
   transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
+  height: 100%;
 }
 
 .j-card:hover {
@@ -739,6 +759,7 @@ a {
 .j-card-img-box {
   width: 100%;
   aspect-ratio: 1 / 1;
+  max-height: 280px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -748,10 +769,14 @@ a {
   border-radius: 8px;
 }
 
-.j-card-img-box img {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: contain;
+.j-card-img-box img,
+.j-card-img-box picture,
+.j-card-img-box svg {
+  max-height: 100% !important;
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
   transition: transform 300ms ease;
 }
 
